@@ -55,7 +55,12 @@
       };
 
       function showMessage(data) {
-        jQuery('#chatContainer').append('<div>' + data.sender + ' -> ' + data.msg + '</div>');
+	if (data.sender == 'first') {
+		jQuery('#chatContainer').append('<div>' + data.msg + '</div>');
+	}
+	else {
+	        jQuery('#chatContainer').append('<div>' + data.uname + " [IP: " + data.sender + '] -> ' + data.msg + '</div>');
+	}
       };
 
       function showAlert(txt) {

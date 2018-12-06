@@ -20,6 +20,7 @@ websocket_init(_Type, Req, _Opts) ->
   % Create the handler from our custom callback
   Handler = ebus_proc:spawn_handler(fun chat_erlbus_handler:handle_msg/2, [self()]),
   ebus:sub(Handler, ?CHATROOM_NAME),
+  ebus:pub(?CHATROOM_NAME, {first, list_to_binary("You joined the chat room")}),
   {ok, Req, #state{name = get_name(Req), handler = Handler}, ?TIMEOUT}.
 
 websocket_handle({text, Msg}, Req, State) ->
@@ -29,7 +30,7 @@ websocket_handle(_Data, Req, State) ->
   {ok, Req, State}.
 
 websocket_info({message_published, {Sender, Msg}}, Req, State) ->
-  {reply, {text, jiffy:encode({[{sender, Sender}, {msg, Msg}]})}, Req, State};
+  {reply, {text, jiffy:encode({[{sender, Sender}, {msg, Msg}, {uname, 'You'}]})}, Req, State};
 websocket_info(_Info, Req, State) ->
   {ok, Req, State}.
 
@@ -45,4 +46,4 @@ get_name(Req) ->
   Name = list_to_binary(string:join([inet_parse:ntoa(Host), 
     ":", io_lib:format("~p", [Port])], "")),
   Name.
-  
+  																												
